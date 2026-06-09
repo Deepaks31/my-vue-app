@@ -8,21 +8,21 @@
     <!-- Navigation Links -->
     <v-list density="compact" nav class="px-0 py-0 text-center">
       
-      <v-list-item class="sidebar-item active-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/' }" link @click="$router.push('/')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-home-outline" color="white" size="small"></v-icon>
+          <v-icon icon="mdi-home-outline" :color="$route.path === '/' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
       
-      <v-list-item class="sidebar-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/jobs' }" link @click="$router.push('/jobs')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-view-grid-outline" color="light-blue-lighten-4" size="small"></v-icon>
+          <v-icon icon="mdi-briefcase-outline" :color="$route.path === '/jobs' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
 
-      <v-list-item class="sidebar-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/orders' }" link @click="$router.push('/orders')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-monitor-dashboard" color="light-blue-lighten-4" size="small"></v-icon>
+          <v-icon icon="mdi-format-list-bulleted" :color="$route.path === '/orders' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
 
