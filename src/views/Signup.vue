@@ -34,16 +34,15 @@
             bg-color="white"
           ></v-text-field>
 
-          <v-select
-            v-model="user.role"
-            :items="['Admin', 'Employee']"
-            label="Select Role"
+          <v-text-field
+            v-model="user.email"
+            label="Email Address"
+            prepend-inner-icon="mdi-email-outline"
             variant="outlined"
-            prepend-inner-icon="mdi-shield-account-outline"
-            required
+            type="email"
             class="mb-6 interactive-input"
             bg-color="white"
-          ></v-select>
+          ></v-text-field>
 
           <v-btn
             type="submit"
@@ -79,11 +78,11 @@ const loading = ref(false);
 const user = ref({
   username: '',
   password: '',
-  role: ''
+  email: ''
 });
 
 const handleSignup = async () => {
-  if (!user.value.username || !user.value.password || !user.value.role) return;
+  if (!user.value.username || !user.value.password || !user.value.email) return;
   loading.value = true;
   try {
     const response = await api.post('/Auth/register', user.value);
