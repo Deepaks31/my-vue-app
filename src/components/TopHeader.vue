@@ -7,14 +7,8 @@
       <span class="text-caption font-weight-bold" style="color: #666;">EigenSecure. <span style="font-weight: 500; color: #999;">Enterprise TruRisk™ Platform</span></span>
     </div>
 
-    <!-- Breadcrumbs -->
-    <div class="px-6 d-flex align-center h-100 flex-grow-1">
-      <span class="text-caption text-blue-darken-2 cursor-pointer font-weight-medium">Applications</span>
-      <v-icon icon="mdi-chevron-right" size="x-small" color="grey" class="mx-1"></v-icon>
-      <span class="text-caption text-blue-darken-2 cursor-pointer font-weight-medium">My Applications</span>
-      <v-icon icon="mdi-chevron-right" size="x-small" color="grey" class="mx-1"></v-icon>
-      <span class="text-caption font-weight-bold text-grey-darken-3">Internet Banking</span>
-    </div>
+    <!-- Empty space where breadcrumbs were -->
+    <div class="px-6 d-flex align-center h-100 flex-grow-1"></div>
     
     <v-spacer></v-spacer>
     
@@ -29,24 +23,48 @@
       <!-- Toolkit Mega Menu -->
       <ToolkitMenu />
       
-      <v-avatar color="grey-lighten-2" size="28" class="mr-4">
-        <span class="text-caption font-weight-bold text-grey-darken-2">ST</span>
-      </v-avatar>
+      <!-- User Dropdown Menu -->
+      <v-menu location="bottom end">
+        <template v-slot:activator="{ props }">
+          <v-avatar v-bind="props" color="grey-lighten-2" size="28" class="mr-4 cursor-pointer">
+            <span class="text-caption font-weight-bold text-grey-darken-2">ST</span>
+          </v-avatar>
+        </template>
+        <v-card min-width="200">
+          <v-list>
+            <v-list-item>
+              <v-list-item-title class="font-weight-bold">{{ authStore.user?.username || 'User' }}</v-list-item-title>
+              <v-list-item-subtitle>{{ authStore.user?.role || 'Role' }}</v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
+          <v-divider></v-divider>
+          <v-list>
+            <v-list-item @click="handleLogout" prepend-icon="mdi-logout" class="text-error">
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
 
-      <v-divider vertical class="mx-2 my-auto" style="height: 32px;"></v-divider>
 
-      <div class="d-flex align-center ml-2 cursor-pointer border rounded px-3 py-1 bg-grey-lighten-4" style="border-color: #e2e8f0 !important;">
-        <v-icon icon="mdi-cube-outline" color="grey-darken-2" size="small" class="mr-2"></v-icon>
-        <span class="text-caption font-weight-bold text-grey-darken-3">Client Logo</span>
-      </div>
     </div>
   </v-app-bar>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/authStore'
 import ToolkitMenu from './ToolkitMenu.vue'
 
 defineEmits(['toggle-notifications'])
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/')
+}
 </script>
 
 <style scoped>

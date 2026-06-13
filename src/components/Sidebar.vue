@@ -26,21 +26,21 @@
         </div>
       </v-list-item>
 
-      <v-list-item class="sidebar-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/employees' }" link @click="$router.push('/employees')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-tune" color="light-blue-lighten-4" size="small"></v-icon>
+          <v-icon icon="mdi-account-group" :color="$route.path === '/employees' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
 
-      <v-list-item class="sidebar-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/projects' }" link @click="$router.push('/projects')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-earth" color="light-blue-lighten-4" size="small"></v-icon>
+          <v-icon icon="mdi-projector" :color="$route.path === '/projects' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
 
-      <v-list-item class="sidebar-item" link>
+      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/departments' }" link @click="$router.push('/departments')">
         <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-magnify" color="light-blue-lighten-4" size="small"></v-icon>
+          <v-icon icon="mdi-domain" :color="$route.path === '/departments' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
         </div>
       </v-list-item>
 
@@ -66,7 +66,7 @@
     
     <template v-slot:append>
       <div class="text-center py-4 text-white" style="font-size: 8px; opacity: 0.7;">
-        © 2024
+        © 2026
       </div>
     </template>
   </v-navigation-drawer>

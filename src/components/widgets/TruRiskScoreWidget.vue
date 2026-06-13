@@ -2,7 +2,7 @@
   <v-card class="widget-card d-flex flex-column" elevation="0">
     <div class="px-4 py-4 d-flex align-center justify-space-between">
       <div>
-        <div class="font-weight-bold text-subtitle-2">2025 Qualys Research Report TruRisk™ Score</div>
+        <div class="font-weight-bold text-subtitle-2">2025 EigenSecure Research Report TruRisk™ Score</div>
         <div class="text-caption text-grey-darken-1" style="font-size: 10px !important;">Last Calculated On: 1 Jan 2025, 10:20AM</div>
       </div>
     </div>
