@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '../services/authService';
 import { useAuthStore } from '../stores/authStore';
@@ -91,6 +91,14 @@ const username = ref('');
 const password = ref('');
 const loading = ref(false);
 const ssoLoading = ref(false);
+
+onMounted(async () => {
+  try {
+    await msalInstance.initialize();
+  } catch (err) {
+    console.error("MSAL init error:", err);
+  }
+});
 
 const handleLogin = async () => {
   if (!username.value || !password.value) return;
@@ -114,7 +122,6 @@ const handleLogin = async () => {
 const handleSsoLogin = async () => {
   ssoLoading.value = true;
   try {
-    await msalInstance.initialize();
     const loginResponse = await msalInstance.loginPopup(loginRequest);
     const accessToken = loginResponse.accessToken;
 
