@@ -43,7 +43,26 @@
             class="mb-4 interactive-btn font-weight-bold"
             elevation="0"
           >
-            Sign In
+            Sign In with Email
+          </v-btn>
+
+          <div class="d-flex align-center mb-4">
+            <v-divider></v-divider>
+            <span class="mx-4 text-caption text-medium-emphasis">OR</span>
+            <v-divider></v-divider>
+          </div>
+
+          <v-btn
+            color="#2F2F2F"
+            block
+            size="large"
+            :loading="ssoLoading"
+            class="mb-4 interactive-btn font-weight-bold text-white"
+            elevation="0"
+            @click="handleSsoLogin"
+          >
+            <v-icon start icon="mdi-microsoft"></v-icon>
+            Continue with Microsoft
           </v-btn>
         </v-form>
       </v-card-text>
@@ -62,6 +81,8 @@ import { useRouter } from 'vue-router';
 import { login } from '../services/authService';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from 'vue3-toastify';
+import { msalInstance, loginRequest } from '../services/msalConfig';
+import api from '../api/axios';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -69,6 +90,7 @@ const authStore = useAuthStore();
 const username = ref('');
 const password = ref('');
 const loading = ref(false);
+const ssoLoading = ref(false);
 
 const handleLogin = async () => {
   if (!username.value || !password.value) return;
@@ -86,6 +108,36 @@ const handleLogin = async () => {
     toast.error(error.response?.data?.message || 'Invalid Credentials');
   } finally {
     loading.value = false;
+  }
+};
+
+const handleSsoLogin = async () => {
+  ssoLoading.value = true;
+  try {
+    await msalInstance.initialize();
+    const loginResponse = await msalInstance.loginPopup(loginRequest);
+    const accessToken = loginResponse.accessToken;
+
+    // Send the token to the backend for verification and JWT generation
+    const response = await api.post('/Auth/sso-login', { token: accessToken });
+    
+    authStore.setToken(response.data.token);
+    toast.success("Microsoft Sign-In Successful!");
+    router.push('/dashboard');
+  } catch (error) {
+    console.error("SSO Error:", error);
+    let errorMsg = 'SSO Failed';
+    if (error.response?.data?.message) {
+      errorMsg = error.response.data.message;
+    } else if (error.message && !error.message.includes("User cancelled")) {
+      errorMsg = error.message;
+    }
+    
+    if (!error.message?.includes("User cancelled")) {
+      toast.error(errorMsg);
+    }
+  } finally {
+    ssoLoading.value = false;
   }
 };
 </script>
