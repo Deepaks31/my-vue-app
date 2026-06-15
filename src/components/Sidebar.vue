@@ -1,10 +1,9 @@
 <template>
   <v-navigation-drawer
     :rail="isRail"
-    expand-on-hover
     permanent
     elevation="4"
-    class="dark-sidebar"
+    class="qualys-sidebar"
   >
     <!-- Hamburger and Branding -->
     <v-list>
@@ -30,62 +29,69 @@
         @click="$router.push('/')"
       ></v-list-item>
 
-      <!-- Operations (Nested Group) -->
-      <v-list-group value="Operations">
+      <!-- Operations (Flyout Menu) -->
+      <v-menu location="end" open-on-hover transition="slide-x-transition">
         <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
             prepend-icon="mdi-briefcase-outline"
             title="Operations"
+            append-icon="mdi-chevron-right"
+            :class="{ 'active-item': ['/jobs', '/orders'].includes($route.path) }"
           ></v-list-item>
         </template>
+        <v-card class="flyout-menu" elevation="8" min-width="200">
+          <v-list density="compact" class="flyout-list">
+            <v-list-item
+              title="Jobs"
+              prepend-icon="mdi-briefcase"
+              :class="{ 'active-subitem': $route.path === '/jobs' }"
+              @click="$router.push('/jobs')"
+            ></v-list-item>
+            <v-list-item
+              title="Orders"
+              prepend-icon="mdi-format-list-bulleted"
+              :class="{ 'active-subitem': $route.path === '/orders' }"
+              @click="$router.push('/orders')"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
 
-        <v-list-item
-          title="Jobs"
-          value="jobs"
-          :class="{ 'active-subitem': $route.path === '/jobs' }"
-          @click="$router.push('/jobs')"
-        ></v-list-item>
-        
-        <v-list-item
-          title="Orders"
-          value="orders"
-          :class="{ 'active-subitem': $route.path === '/orders' }"
-          @click="$router.push('/orders')"
-        ></v-list-item>
-      </v-list-group>
-
-      <!-- Administration (Nested Group) -->
-      <v-list-group value="Administration">
+      <!-- Administration (Flyout Menu) -->
+      <v-menu location="end" open-on-hover transition="slide-x-transition">
         <template v-slot:activator="{ props }">
           <v-list-item
             v-bind="props"
             prepend-icon="mdi-account-cog-outline"
             title="Administration"
+            append-icon="mdi-chevron-right"
+            :class="{ 'active-item': ['/employees', '/departments', '/projects'].includes($route.path) }"
           ></v-list-item>
         </template>
-
-        <v-list-item
-          title="Employees"
-          value="employees"
-          :class="{ 'active-subitem': $route.path === '/employees' }"
-          @click="$router.push('/employees')"
-        ></v-list-item>
-
-        <v-list-item
-          title="Departments"
-          value="departments"
-          :class="{ 'active-subitem': $route.path === '/departments' }"
-          @click="$router.push('/departments')"
-        ></v-list-item>
-
-        <v-list-item
-          title="Projects"
-          value="projects"
-          :class="{ 'active-subitem': $route.path === '/projects' }"
-          @click="$router.push('/projects')"
-        ></v-list-item>
-      </v-list-group>
+        <v-card class="flyout-menu" elevation="8" min-width="200">
+          <v-list density="compact" class="flyout-list">
+            <v-list-item
+              title="Employees"
+              prepend-icon="mdi-account-group"
+              :class="{ 'active-subitem': $route.path === '/employees' }"
+              @click="$router.push('/employees')"
+            ></v-list-item>
+            <v-list-item
+              title="Departments"
+              prepend-icon="mdi-domain"
+              :class="{ 'active-subitem': $route.path === '/departments' }"
+              @click="$router.push('/departments')"
+            ></v-list-item>
+            <v-list-item
+              title="Projects"
+              prepend-icon="mdi-projector"
+              :class="{ 'active-subitem': $route.path === '/projects' }"
+              @click="$router.push('/projects')"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
 
     </v-list>
 
@@ -100,9 +106,6 @@
 <script setup>
 import { ref } from 'vue';
 
-// Starts locked in 'rail' (compact) mode. 
-// expand-on-hover temporarily opens it.
-// Clicking the hamburger toggles the permanent lock.
 const isRail = ref(true);
 
 const toggleRail = () => {
@@ -111,51 +114,59 @@ const toggleRail = () => {
 </script>
 
 <style scoped>
-/* Main Dark Theme Sidebar */
-.dark-sidebar {
-  background-color: #212121 !important; /* Very dark grey */
-  color: #E0E0E0 !important;
-  border-right: 1px solid #333 !important;
+/* Original Qualys Blue Theme */
+.qualys-sidebar {
+  background-color: #0f4f9a !important; 
+  color: #FFFFFF !important;
+  border-right: none !important;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Sidebar header text */
 .sidebar-header-item {
   font-weight: 700;
   letter-spacing: 1px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.sidebar-header-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Standard Icon colors */
-:deep(.v-list-item__prepend > .v-icon) {
-  color: #9E9E9E !important;
+:deep(.v-list-item__prepend > .v-icon),
+:deep(.v-list-item__append > .v-icon) {
+  color: #bbdefb !important; /* light blue */
   opacity: 1 !important;
 }
 
-/* Hover effect */
+/* Hover effect for all items */
 :deep(.v-list-item:hover) {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Active Top-Level Item */
 .active-item {
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid #64B5F6 !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-left: 3px solid #ffffff !important;
 }
 
-/* Active Sub-Level Item */
+/* Flyout Menu Styling - Professional & Interactive */
+.flyout-menu {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+.flyout-list {
+  background-color: #0d4282 !important; /* Slightly darker blue for flyout */
+  color: white !important;
+}
+
+/* Flyout Subitems */
 .active-subitem {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #64B5F6 !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
   font-weight: 600;
-}
-
-/* Indent nested items inside v-list-group */
-:deep(.v-list-group__items .v-list-item) {
-  padding-left: 54px !important; 
-}
-
-/* Caret for nested groups */
-:deep(.v-list-item__append > .v-icon) {
-  font-size: 14px;
-  color: #757575;
 }
 </style>
