@@ -1,97 +1,161 @@
 <template>
-  <v-navigation-drawer permanent elevation="0" class="qualys-sidebar" width="60">
-    <!-- Top Branding -->
-    <div class="d-flex justify-center align-center py-4 sidebar-header">
-      <span class="font-weight-bold text-white text-caption">TAS</span>
-    </div>
-
-    <!-- Navigation Links -->
-    <v-list density="compact" nav class="px-0 py-0 text-center">
-      
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/' }" link @click="$router.push('/')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-home-outline" :color="$route.path === '/' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-      
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/jobs' }" link @click="$router.push('/jobs')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-briefcase-outline" :color="$route.path === '/jobs' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/orders' }" link @click="$router.push('/orders')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-format-list-bulleted" :color="$route.path === '/orders' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/employees' }" link @click="$router.push('/employees')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-account-group" :color="$route.path === '/employees' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/projects' }" link @click="$router.push('/projects')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-projector" :color="$route.path === '/projects' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" :class="{ 'active-item': $route.path === '/departments' }" link @click="$router.push('/departments')">
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-domain" :color="$route.path === '/departments' ? 'white' : 'light-blue-lighten-4'" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" link>
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-file-document-outline" color="light-blue-lighten-4" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" link>
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-sitemap" color="light-blue-lighten-4" size="small"></v-icon>
-        </div>
-      </v-list-item>
-
-      <v-list-item class="sidebar-item" link>
-        <div class="d-flex justify-center w-100">
-          <v-icon icon="mdi-link-variant" color="light-blue-lighten-4" size="small"></v-icon>
-        </div>
-      </v-list-item>
-      
+  <v-navigation-drawer
+    :rail="isRail"
+    expand-on-hover
+    permanent
+    elevation="4"
+    class="dark-sidebar"
+  >
+    <!-- Hamburger and Branding -->
+    <v-list>
+      <v-list-item
+        prepend-icon="mdi-menu"
+        title="EigenSecure"
+        class="text-white sidebar-header-item"
+        @click.stop="toggleRail"
+      ></v-list-item>
     </v-list>
-    
+
+    <v-divider color="rgba(255,255,255,0.1)"></v-divider>
+
+    <!-- Navigation Items -->
+    <v-list density="compact" nav>
+      
+      <!-- Dashboard (Single Item) -->
+      <v-list-item
+        prepend-icon="mdi-home-outline"
+        title="Dashboards"
+        value="dashboards"
+        :class="{ 'active-item': $route.path === '/' }"
+        @click="$router.push('/')"
+      ></v-list-item>
+
+      <!-- Operations (Nested Group) -->
+      <v-list-group value="Operations">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-briefcase-outline"
+            title="Operations"
+          ></v-list-item>
+        </template>
+
+        <v-list-item
+          title="Jobs"
+          value="jobs"
+          :class="{ 'active-subitem': $route.path === '/jobs' }"
+          @click="$router.push('/jobs')"
+        ></v-list-item>
+        
+        <v-list-item
+          title="Orders"
+          value="orders"
+          :class="{ 'active-subitem': $route.path === '/orders' }"
+          @click="$router.push('/orders')"
+        ></v-list-item>
+      </v-list-group>
+
+      <!-- Administration (Nested Group) -->
+      <v-list-group value="Administration">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-account-cog-outline"
+            title="Administration"
+          ></v-list-item>
+        </template>
+
+        <v-list-item
+          title="Employees"
+          value="employees"
+          :class="{ 'active-subitem': $route.path === '/employees' }"
+          @click="$router.push('/employees')"
+        ></v-list-item>
+
+        <v-list-item
+          title="Departments"
+          value="departments"
+          :class="{ 'active-subitem': $route.path === '/departments' }"
+          @click="$router.push('/departments')"
+        ></v-list-item>
+
+        <v-list-item
+          title="Projects"
+          value="projects"
+          :class="{ 'active-subitem': $route.path === '/projects' }"
+          @click="$router.push('/projects')"
+        ></v-list-item>
+      </v-list-group>
+
+    </v-list>
+
     <template v-slot:append>
-      <div class="text-center py-4 text-white" style="font-size: 8px; opacity: 0.7;">
-        © 2026
+      <div class="text-center py-4 text-white" style="font-size: 10px; opacity: 0.5;">
+        <span v-if="!isRail">© 2026 EigenSecure</span>
       </div>
     </template>
   </v-navigation-drawer>
 </template>
 
+<script setup>
+import { ref } from 'vue';
+
+// Starts locked in 'rail' (compact) mode. 
+// expand-on-hover temporarily opens it.
+// Clicking the hamburger toggles the permanent lock.
+const isRail = ref(true);
+
+const toggleRail = () => {
+  isRail.value = !isRail.value;
+};
+</script>
+
 <style scoped>
-.qualys-sidebar {
-  background-color: #0f4f9a !important; /* Qualys Blue */
-  border-right: none !important;
+/* Main Dark Theme Sidebar */
+.dark-sidebar {
+  background-color: #212121 !important; /* Very dark grey */
+  color: #E0E0E0 !important;
+  border-right: 1px solid #333 !important;
 }
-.sidebar-header {
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 8px;
-  height: 56px;
+
+/* Sidebar header text */
+.sidebar-header-item {
+  font-weight: 700;
+  letter-spacing: 1px;
 }
-.sidebar-item {
-  padding: 12px 0 !important;
-  margin-bottom: 4px !important;
-  border-radius: 0 !important;
+
+/* Standard Icon colors */
+:deep(.v-list-item__prepend > .v-icon) {
+  color: #9E9E9E !important;
+  opacity: 1 !important;
 }
-.sidebar-item:hover {
-  background-color: rgba(255,255,255,0.1);
+
+/* Hover effect */
+:deep(.v-list-item:hover) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
+
+/* Active Top-Level Item */
 .active-item {
-  background-color: rgba(255,255,255,0.15) !important;
-  border-left: 3px solid white;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-left: 3px solid #64B5F6 !important;
+}
+
+/* Active Sub-Level Item */
+.active-subitem {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #64B5F6 !important;
+  font-weight: 600;
+}
+
+/* Indent nested items inside v-list-group */
+:deep(.v-list-group__items .v-list-item) {
+  padding-left: 54px !important; 
+}
+
+/* Caret for nested groups */
+:deep(.v-list-item__append > .v-icon) {
+  font-size: 14px;
+  color: #757575;
 }
 </style>

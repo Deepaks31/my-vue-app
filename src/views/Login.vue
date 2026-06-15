@@ -95,8 +95,34 @@ const ssoLoading = ref(false);
 onMounted(async () => {
   try {
     await msalInstance.initialize();
-  } catch (err) {
-    console.error("MSAL init error:", err);
+    
+    // Check if we are returning from a Microsoft redirect
+    const redirectResponse = await msalInstance.handleRedirectPromise();
+    if (redirectResponse) {
+      ssoLoading.value = true;
+      const accessToken = redirectResponse.accessToken;
+      
+      // Send the token to the backend for verification
+      const response = await api.post('/Auth/sso-login', { token: accessToken });
+      
+      authStore.setToken(response.data.token);
+      toast.success("Microsoft Sign-In Successful!");
+      router.push('/dashboard');
+    }
+  } catch (error) {
+    console.error("MSAL init or redirect error:", error);
+    let errorMsg = 'SSO Failed';
+    if (error.response?.data?.message) {
+      errorMsg = error.response.data.message;
+    } else if (error.message && !error.message.includes("User cancelled")) {
+      errorMsg = error.message;
+    }
+    
+    if (!error.message?.includes("User cancelled")) {
+      toast.error(errorMsg);
+    }
+  } finally {
+    ssoLoading.value = false;
   }
 });
 
@@ -122,28 +148,10 @@ const handleLogin = async () => {
 const handleSsoLogin = async () => {
   ssoLoading.value = true;
   try {
-    const loginResponse = await msalInstance.loginPopup(loginRequest);
-    const accessToken = loginResponse.accessToken;
-
-    // Send the token to the backend for verification and JWT generation
-    const response = await api.post('/Auth/sso-login', { token: accessToken });
-    
-    authStore.setToken(response.data.token);
-    toast.success("Microsoft Sign-In Successful!");
-    router.push('/dashboard');
+    // loginRedirect replaces the window, so no popups!
+    await msalInstance.loginRedirect(loginRequest);
   } catch (error) {
-    console.error("SSO Error:", error);
-    let errorMsg = 'SSO Failed';
-    if (error.response?.data?.message) {
-      errorMsg = error.response.data.message;
-    } else if (error.message && !error.message.includes("User cancelled")) {
-      errorMsg = error.message;
-    }
-    
-    if (!error.message?.includes("User cancelled")) {
-      toast.error(errorMsg);
-    }
-  } finally {
+    console.error("SSO Redirect Error:", error);
     ssoLoading.value = false;
   }
 };
