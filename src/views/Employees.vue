@@ -2,6 +2,9 @@
   <v-container fluid class="pa-6">
     <div class="d-flex justify-space-between align-center mb-6 slide-down">
       <h2 class="text-h5 font-weight-bold mb-0 text-primary">Employee Directory</h2>
+      <v-btn color="primary" variant="tonal" prepend-icon="mdi-refresh" @click="loadData(true)">
+        Refresh Data
+      </v-btn>
     </div>
 
     <!-- Add/Edit Employee Form -->
@@ -136,6 +139,7 @@
             <th class="text-left font-weight-bold">Name</th>
             <th class="text-left font-weight-bold">Email</th>
             <th class="text-left font-weight-bold">Salary</th>
+            <th class="text-left font-weight-bold">Shift</th>
             <th class="text-left font-weight-bold">Department</th>
             <th class="text-left font-weight-bold">Projects</th>
             <th class="text-right font-weight-bold" v-if="authStore.user?.role === 'Admin'">Action</th>
@@ -146,6 +150,18 @@
             <td class="font-weight-bold text-primary">{{ emp.name }}</td>
             <td class="text-body-1">{{ emp.email }}</td>
             <td class="text-body-1">${{ emp.salary.toLocaleString() }}</td>
+            <td>
+              <v-chip
+                :color="(emp.currentShift || emp.CurrentShift) === 'Morning' ? 'success' : ((emp.currentShift || emp.CurrentShift) === 'Evening' ? 'warning' : 'indigo')"
+                size="small"
+                class="font-weight-bold text-white elevation-1"
+              >
+                <v-icon start size="small" class="mr-1">
+                  {{ (emp.currentShift || emp.CurrentShift) === 'Morning' ? 'mdi-weather-sunny' : ((emp.currentShift || emp.CurrentShift) === 'Evening' ? 'mdi-weather-sunset' : 'mdi-weather-night') }}
+                </v-icon>
+                {{ (emp.currentShift || emp.CurrentShift) || 'Morning' }}
+              </v-chip>
+            </td>
             <td>
               <v-chip
                 :color="emp.departmentName === 'Unassigned' ? 'error' : 'grey-darken-3'"
@@ -202,7 +218,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from '../services/employeeService';
 import { getDepartments } from '../services/departmentService';
@@ -216,6 +232,7 @@ const departments = ref([]);
 const allProjects = ref([]);
 const loading = ref(true);
 const submitting = ref(false);
+let pollingInterval = null;
 
 const isEditing = ref(false);
 const editId = ref(null);
@@ -228,8 +245,8 @@ const employee = ref({
   projectIds: []
 });
 
-const loadData = async () => {
-  loading.value = true;
+const loadData = async (showLoading = true) => {
+  if (showLoading) loading.value = true;
   try {
     const [empRes, deptRes, projRes] = await Promise.all([
       getEmployees(),
@@ -240,9 +257,9 @@ const loadData = async () => {
     departments.value = deptRes.data;
     allProjects.value = projRes.data;
   } catch (error) {
-    toast.error('Failed to load data');
+    console.error('Failed to load data', error);
   } finally {
-    loading.value = false;
+    if (showLoading) loading.value = false;
   }
 };
 
@@ -316,6 +333,14 @@ const removeEmployee = async (id) => {
 
 onMounted(() => {
   loadData();
+  // Poll the backend every 5 seconds so we can see the automated Shift Rotator in real-time!
+  pollingInterval = setInterval(() => {
+    loadData(false);
+  }, 5000);
+});
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval);
 });
 </script>
 

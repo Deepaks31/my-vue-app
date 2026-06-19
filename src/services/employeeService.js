@@ -1,7 +1,13 @@
 import api from '../api/axios'
 
 export const getEmployees = async () => {
-  return await api.get('/Employees')
+  return await api.get(`/Employees?t=${new Date().getTime()}`, {
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  })
 }
 
 export const createEmployee = async (data) => {
